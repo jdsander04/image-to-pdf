@@ -7,6 +7,12 @@ from time import sleep
 import math
 from tkinter import filedialog
 
+def is_valid_folder(folder_path):
+    return os.path.isdir(folder_path)
+
+def get_child_folders(parent_folder):
+    return [folder for folder in os.listdir(parent_folder) if os.path.isdir(os.path.join(parent_folder, folder))]
+
 def convert_images_to_pdf(folder_path, output_file):
     image_files = [file for file in os.listdir(folder_path) if file.lower().endswith(('.jpg', '.png'))]
     image_files.sort()  # Sort the files to maintain order
@@ -20,52 +26,18 @@ def convert_images_to_pdf(folder_path, output_file):
 
         pdf_file.write(img2pdf.convert(images))
 
-def process_child_folders(parent_folder, pdf_placement):
-    child_folders = [folder for folder in os.listdir(parent_folder) if os.path.isdir(os.path.join(parent_folder, folder))]
-    num_folders = len(child_folders)
-
-    print("Processing child folders:")
-    for i, folder_name in enumerate(child_folders, start=1):
-        child_folder = os.path.join(parent_folder, folder_name)
-        pdf_name = folder_name + '.pdf'
-
-        pdf_name = re.sub(r'^.*?(Chapter)', r'\1', pdf_name)
-
-        match = re.search(r'\d+', pdf_name)
-        if match:
-            number = int(match.group())
-            pdf_name = str(number).zfill(4) + " " + pdf_name
-        else:
-            print("Couldn't Find Number")
-
-        output_file = os.path.join(pdf_placement, pdf_name)
-
-        #Progress = math.floor((i/num_folders)*20)
-        #bar = Progress*chr(9619)+'_'*(20-Progress)
-        #terminal.write("\r["+bar+"]  " + str(i) + "/" + str(num_folders))
-
-        try:
-            convert_images_to_pdf(child_folder, output_file)
-        except Exception as e:
-            print(f"Error converting images in folder '{child_folder}': {str(e)}")
-
-    print("\nProcessing completed!")
-
-def start_button_click():
-    global parentFolder
-    global output
-
-    if not os.path.isdir(parentFolder):
-        print("Invalid parent folder path.")
-    elif not os.path.isdir(output):
-        print("invalid pdf output folder.")
+def adjust_pdf_name(pdf_name):
+    pdf_name = re.sub(r'^.*?(Chapter)', r'\1', pdf_name)
+    match = re.search(r'\d+', pdf_name)
+    if match:
+        number = int(match.group())
+        pdf_name = str(number).zfill(4) + " " + pdf_name
     else:
-        process_child_folders(parentFolder, output)
+        print("Couldn't Find Number")
+    return pdf_name
 
-def selectParentFolder():
-    global parentFolder
-    parentFolder = filedialog.askdirectory(title="Select the parent folder folder")
-    
-def selectOuputFolder():
-    global output
-    output = filedialog.askdirectory(title="Select the output folder")
+def get_child_folder_path(parent_folder, folder_name):
+    return os.path.join(parent_folder, folder_name)
+
+def get_output_file_path(pdf_placement, pdf_name):
+    return os.path.join(pdf_placement, pdf_name)
