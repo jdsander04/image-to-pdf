@@ -4,8 +4,6 @@ from PIL import Image
 import re
 from sys import stdout as terminal
 from time import sleep
-import math
-from tkinter import filedialog
 
 def is_valid_folder(folder_path):
     return os.path.isdir(folder_path)
@@ -19,7 +17,8 @@ def convert_images_to_pdf(folder_path, output_file):
 
     with open(output_file, 'wb') as pdf_file:
         images = []
-        for image in image_files:
+        
+        for index, image in enumerate(image_files):
             image_path = os.path.join(folder_path, image)
             with open(image_path, 'rb') as img:
                 images.append(img.read())
