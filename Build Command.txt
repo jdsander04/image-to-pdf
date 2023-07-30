@@ -1,0 +1,1 @@
+pyinstaller --noconsole -p "C:\...\image-to-pdf\itopfuncs" main.py

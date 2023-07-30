@@ -25,16 +25,6 @@ def convert_images_to_pdf(folder_path, output_file):
 
         pdf_file.write(img2pdf.convert(images))
 
-def adjust_pdf_name(pdf_name):
-    pdf_name = re.sub(r'^.*?(Chapter)', r'\1', pdf_name)
-    match = re.search(r'\d+', pdf_name)
-    if match:
-        number = int(match.group())
-        pdf_name = str(number).zfill(4) + " " + pdf_name
-    else:
-        print("Couldn't Find Number")
-    return pdf_name
-
 def get_child_folder_path(parent_folder, folder_name):
     return os.path.join(parent_folder, folder_name)
 
