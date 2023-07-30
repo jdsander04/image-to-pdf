@@ -11,12 +11,10 @@ Errors = ""
 consoleText = ""
 
 # def newError(error):
+#     ct = datetime.datetime.now()
 #     if not error.endswith("\n"):
 #         error += "\n"
-#     global Errors
-#     Errors += error
-#     print(Errors)
-#     update_progress_console()
+
 
 # def newProgressUpdate(update):
 #     if not update.endswith("\n"):
@@ -25,14 +23,14 @@ consoleText = ""
 #     consoleText += update
 #     update_progress_console()
 
-# def update_progress_bar(value):
-#     progress_bar["value"] = value
-#     root.update_idletasks()
+def update_progress_bar(value):
+    progress_bar["value"] = value
+    root.update_idletasks()
 
-# def update_progress_console():
-#     global consoleText
-#     output_console.config(text=consoleText+"\n"+Errors)
-#     root.update_idletasks()
+def update_progress_console():
+    global consoleText
+    # output_console.config(text=consoleText+"\n"+Errors)
+    root.update_idletasks()
 
 def start_button_click():
     global parentFolder
@@ -51,26 +49,30 @@ def selectParentFolder():
     if parentFolder != "":
         parentFolderButton.config(text=parentFolder)
     
-def selectOuputFolder():
+def selectOutputFolder():
     global output
     output = filedialog.askdirectory(title="Select the output folder")
     if output != "":
         outputFolderButton.config(text=output)
 
-
-
 def process_child_folders(parent_folder, pdf_placement):
     global consoleText
+    emptyList = []
     child_folders = itopfuncs.get_child_folders(parent_folder)
+    if not child_folders:  # Check if the list is empty
+        child_folders.append(parent_folder)
     num_folders = len(child_folders)
 
     progress_step = 100 / num_folders  # Calculate the step for each folder
 
     print("Processing child folders:")
     total_progress = 0
-
     for i, folder_name in enumerate(child_folders, start=1):
-        child_folder = itopfuncs.get_child_folder_path(parent_folder, folder_name)
+        if child_folders[0] == parent_folder:
+            child_folder = parent_folder  # Changed '==' to '='
+        else:
+            child_folder = itopfuncs.get_child_folder_path(parent_folder, folder_name)
+        
         pdf_name = folder_name + '.pdf'
 
         pdf_name = adjust_pdf_name(pdf_name)
@@ -80,7 +82,7 @@ def process_child_folders(parent_folder, pdf_placement):
         try:
             itopfuncs.convert_images_to_pdf(child_folder, output_file)
         except Exception as e:
-            newError("Error converting images in folder '{child_folder}': {str(e)}\n")
+            print(f"Error converting images in folder '{child_folder}': {str(e)}\n")
         
         total_progress += progress_step
         update_progress_bar(total_progress)
@@ -93,10 +95,7 @@ def adjust_pdf_name(pdf_name):
     if match:
         number = int(match.group())
         pdf_name = str(number).zfill(4) + " " + pdf_name
-    else:
-        newError("Couldn't Find Number")
     return pdf_name
-
 
 
 root = itop.Tk()
@@ -116,11 +115,12 @@ button = itop.Button(root, text="Images to PDF!", command=start_button_click, wi
 button.pack(pady=5, padx=5, side="bottom")
 button.configure(bg="#A69CAC")
 
-outputFolderButton = itop.Button(root, text=output, command=selectOuputFolder, width=35)
+outputFolderButton = itop.Button(root, text=output, command=selectOutputFolder, width=35)
 outputFolderButton.pack(pady=5, padx=5, side="bottom")
 outputFolderButton.configure(bg="#A69CAC")
 
 parentFolderButton = itop.Button(root, text=parentFolder, command=selectParentFolder, width=35)
-parentFolderButton.pack(pady=5, padx = 15, side="bottom")
+parentFolderButton.pack(pady=5, padx=5, side="bottom")
 parentFolderButton.configure(bg="#A69CAC")
+
 root.mainloop()
