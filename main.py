@@ -1,4 +1,5 @@
 import itopfuncs
+import os
 import tkinter as itop
 from tkinter import filedialog
 from tkinter import ttk
@@ -69,7 +70,7 @@ def process_child_folders(parent_folder, pdf_placement):
     total_progress = 0
     for i, folder_name in enumerate(child_folders, start=1):
         if child_folders[0] == parent_folder:
-            child_folder = parent_folder  # Changed '==' to '='
+            child_folder = parent_folder
         else:
             child_folder = itopfuncs.get_child_folder_path(parent_folder, folder_name)
         
@@ -79,10 +80,13 @@ def process_child_folders(parent_folder, pdf_placement):
 
         output_file = itopfuncs.get_output_file_path(pdf_placement, pdf_name)
 
-        try:
-            itopfuncs.convert_images_to_pdf(child_folder, output_file)
-        except Exception as e:
-            print(f"Error converting images in folder '{child_folder}': {str(e)}\n")
+        if not os.path.exists(output_file):
+            try:
+                itopfuncs.convert_images_to_pdf(child_folder, output_file)
+            except Exception as e:
+                print(f"Error converting images in folder '{child_folder}': {str(e)}\n")
+        else:
+            print(output_file + " already exists")
         
         total_progress += progress_step
         update_progress_bar(total_progress)
