@@ -11,19 +11,6 @@ output = "Select the output folder"
 Errors = ""
 consoleText = ""
 
-# def newError(error):
-#     ct = datetime.datetime.now()
-#     if not error.endswith("\n"):
-#         error += "\n"
-
-
-# def newProgressUpdate(update):
-#     if not update.endswith("\n"):
-#         update += "\n"
-#     global consoleText
-#     consoleText += update
-#     update_progress_console()
-
 def update_progress_bar(value):
     progress_bar["value"] = value
     root.update_idletasks()
@@ -38,9 +25,9 @@ def start_button_click():
     global output
 
     if not itopfuncs.is_valid_folder(parentFolder):
-        newError("Invalid parent folder path.")
+        messagebox.showerror("Invalid parent folder path.", "Please select a valid source folder")
     elif not itopfuncs.is_valid_folder(output):
-        newError("Invalid PDF output folder.")
+        messagebox.showerror("Invalid output folder path.", "Please select a valid output folder")
     else:
         process_child_folders(parentFolder, output)
 
@@ -104,7 +91,7 @@ def adjust_pdf_name(pdf_name):
 
 root = itop.Tk()
 
-root.title("iTop (hot girls)")
+root.title("iTop, the image-to-pdf app")
 
 root.configure(bg="#474973")
 
