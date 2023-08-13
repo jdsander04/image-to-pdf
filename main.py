@@ -88,6 +88,22 @@ def adjust_pdf_name(pdf_name):
         pdf_name = str(number).zfill(4) + " " + pdf_name
     return pdf_name
 
+def syncFolders():
+    global parentFolder
+    global output
+
+    secendaryFolders = itopfuncs.get_child_folders(parentFolder)
+    for mangaFolderPath in secendaryFolders:
+        mangaOutputPath = itopfuncs.get_output_file_path(output, mangaFolderPath)
+        mangaFolderPath = itopfuncs.get_child_folder_path(parentFolder, mangaFolderPath)
+
+        if not os.path.exists(mangaOutputPath):
+            os.mkdir(mangaOutputPath)
+            #print(f"Folder '{mangaOutputPath}' created successfully.")
+        #else:
+            #print(f"Folder '{mangaOutputPath}' already exists.")
+        process_child_folders(mangaFolderPath, mangaOutputPath)
+
 
 root = itop.Tk()
 
@@ -102,9 +118,13 @@ label.configure(bg="#474973", state="disabled")
 progress_bar = ttk.Progressbar(root, orient="horizontal", mode="determinate", length=250, maximum=100)
 progress_bar.pack(pady=5, padx=5, side="bottom")
 
+SyncButton = itop.Button(root, text="Sync Files Structure", command=syncFolders,width=35)
+SyncButton.pack(pady=5, padx=5, side="bottom")
+SyncButton.configure(bg="#999999")
+
 button = itop.Button(root, text="Images to PDF!", command=start_button_click, width=35)
 button.pack(pady=5, padx=5, side="bottom")
-button.configure(bg="#A69CAC")
+button.configure(bg="#999999")
 
 outputFolderButton = itop.Button(root, text=output, command=selectOutputFolder, width=35)
 outputFolderButton.pack(pady=5, padx=5, side="bottom")

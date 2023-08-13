@@ -9,7 +9,12 @@ def is_valid_folder(folder_path):
     return os.path.isdir(folder_path)
 
 def get_child_folders(parent_folder):
-    return [folder for folder in os.listdir(parent_folder) if os.path.isdir(os.path.join(parent_folder, folder))]
+    try:
+        child_folders = [folder for folder in os.listdir(parent_folder) if os.path.isdir(os.path.join(parent_folder, folder))]
+        return child_folders
+    except FileNotFoundError:
+        print(f"Parent folder '{parent_folder}' not found.")
+        return []
 
 def convert_images_to_pdf(folder_path, output_file):
     image_files = [file for file in os.listdir(folder_path) if file.lower().endswith(('.jpg', '.png'))]
